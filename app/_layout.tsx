@@ -13,6 +13,9 @@ import { Platform } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import "./styles/global.css";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import db from "~/server/db";
+import migrations from "~/server/db/drizzle/migrations";
 
 import {
   Geist_400Regular,
@@ -90,6 +93,10 @@ export default function RootLayout() {
   const hasMounted = React.useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+  const { success: migrationSuccess, error: migrationError } = useMigrations(
+    db,
+    migrations
+  );
 
   const [fontsLoaded] = useFonts({
     Geist_400Regular,
@@ -107,6 +114,15 @@ export default function RootLayout() {
       // Adds the background color to the html element to prevent white background on overscroll.
       document.documentElement.classList.add("bg-background");
     }
+
+    if (migrationError) {
+      console.error(
+        "[Error]: Something went wrong when migrating the database",
+        JSON.stringify(migrationError, null, 2)
+      );
+      return;
+    }
+
     setIsColorSchemeLoaded(true);
     hasMounted.current = true;
   }, []);
