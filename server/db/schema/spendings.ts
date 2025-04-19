@@ -6,6 +6,7 @@ export const spendings = sqliteTable("spendings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   description: text("description").notNull(),
   amount: real("amount").notNull(),
+  method: text("method").notNull(),
   // Store date as Unix timestamp (milliseconds) for easier querying
   date: integer("date", { mode: "timestamp_ms" })
     .notNull()
