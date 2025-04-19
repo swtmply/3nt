@@ -16,6 +16,8 @@ import "./styles/global.css";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import db from "~/server/db";
 import migrations from "~/server/db/drizzle/migrations";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useReactQueryDevTools } from "@dev-plugins/react-query";
 
 import {
   Geist_400Regular,
@@ -89,6 +91,8 @@ export {
   ErrorBoundary,
 } from "expo-router";
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const hasMounted = React.useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
@@ -97,6 +101,7 @@ export default function RootLayout() {
     db,
     migrations
   );
+  useReactQueryDevTools(queryClient);
 
   const [fontsLoaded] = useFonts({
     Geist_400Regular,
@@ -107,6 +112,14 @@ export default function RootLayout() {
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
+      if (fontsLoaded) {
+        console.log("[Fonts]: Fonts are loaded correctly");
+      }
+
+      if (migrationSuccess) {
+        console.log("[Database]: Migration of database is successful");
+      }
+
       return;
     }
 
@@ -132,10 +145,12 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-      <TabsLayout />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+        <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+        <TabsLayout />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

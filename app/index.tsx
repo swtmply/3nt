@@ -1,10 +1,7 @@
 import { Text } from "~/components/ui/text";
 import { View } from "~/components/ui/view";
-import { getLoadedFonts } from "expo-font";
 
 export default function Index() {
-  console.log(getLoadedFonts());
-
   return (
     <View className="flex-1 px-4 pt-16">
       <Text className="text-5xl font-bold tracking-tight mb-8">Spendings</Text>
@@ -36,6 +33,12 @@ interface SpendingCardProps {
   previousSpending: number;
 }
 
+const previousText = {
+  day: "Yesterday",
+  week: "Last Week",
+  month: "Last Month",
+};
+
 const SpendingCard = ({
   type,
   currentSpending,
@@ -54,7 +57,7 @@ const SpendingCard = ({
           }).format(currentSpending)}
         </Text>
         <Text className="text-muted-foreground">
-          Yesterday{" "}
+          {previousText[type]}{" "}
           {Intl.NumberFormat("en-PH", {
             style: "currency",
             currency: "PHP",
