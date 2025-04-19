@@ -1,7 +1,18 @@
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import React from "react";
+import { TouchableHighlight } from "react-native";
+import SpendingFormBottomSheet from "~/components/bottom-sheet";
+import { Plus } from "~/components/icons";
 import { Text } from "~/components/ui/text";
 import { View } from "~/components/ui/view";
 
 export default function Index() {
+  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+
+  const handleOpenSpendingForm = () => {
+    bottomSheetModalRef.current?.present();
+  };
+
   return (
     <View className="flex-1 px-4 pt-16">
       <Text className="text-5xl font-bold tracking-tight mb-8">Spendings</Text>
@@ -23,6 +34,15 @@ export default function Index() {
           previousSpending={1231211}
         />
       </View>
+
+      <TouchableHighlight
+        onPress={handleOpenSpendingForm}
+        className="absolute bottom-4 right-4 w-16 rounded-full bg-primary h-16 justify-center items-center"
+      >
+        <Plus size={32} className="rounded-full text-primary-foreground" />
+      </TouchableHighlight>
+
+      <SpendingFormBottomSheet ref={bottomSheetModalRef} />
     </View>
   );
 }

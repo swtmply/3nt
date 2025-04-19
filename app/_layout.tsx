@@ -26,6 +26,7 @@ import {
   Geist_700Bold,
   useFonts,
 } from "@expo-google-fonts/geist";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function TabsLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
@@ -148,7 +149,9 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-        <TabsLayout />
+        <GestureHandlerRootView className="flex-1">
+          <TabsLayout />
+        </GestureHandlerRootView>
       </ThemeProvider>
     </QueryClientProvider>
   );
