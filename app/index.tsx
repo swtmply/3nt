@@ -1,21 +1,20 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
 import { TouchableHighlight } from "react-native";
-import SpendingFormBottomSheet from "~/components/bottom-sheet";
+import SpendingFormBottomSheet from "~/components/spending-bottom-sheet";
 import { Plus } from "~/components/icons";
 import { Text } from "~/components/ui/text";
 import { View } from "~/components/ui/view";
+import { useBottomSheet } from "~/contexts/bottom-sheet-context";
 
 export default function Index() {
-  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
-
-  const handleOpenSpendingForm = () => {
-    bottomSheetModalRef.current?.present();
-  };
+  const { openBottomSheet } = useBottomSheet();
 
   return (
     <View className="flex-1 px-4 pt-16">
-      <Text className="text-5xl font-bold tracking-tight mb-8">Spendings</Text>
+      <Text className="text-5xl font-geist-bold tracking-tighter mb-8 pt-1">
+        Spendings
+      </Text>
 
       <View className="gap-4">
         <SpendingCard
@@ -36,13 +35,13 @@ export default function Index() {
       </View>
 
       <TouchableHighlight
-        onPress={handleOpenSpendingForm}
+        onPress={() => {
+          openBottomSheet(<SpendingFormBottomSheet />);
+        }}
         className="absolute bottom-4 right-4 w-16 rounded-full bg-primary h-16 justify-center items-center"
       >
         <Plus size={32} className="rounded-full text-primary-foreground" />
       </TouchableHighlight>
-
-      <SpendingFormBottomSheet ref={bottomSheetModalRef} />
     </View>
   );
 }
@@ -66,11 +65,11 @@ const SpendingCard = ({
 }: SpendingCardProps) => {
   return (
     <View className="bg-secondary p-4 rounded-lg gap-3">
-      <Text className="text-lg capitalize font-medium text-secondary-foreground">
+      <Text className="text-lg capitalize font-geist-medium text-secondary-foreground">
         Spent This {type}
       </Text>
       <View>
-        <Text className="text-4xl font-medium text-secondary-foreground">
+        <Text className="text-4xl font-geist-medium text-secondary-foreground">
           {Intl.NumberFormat("en-PH", {
             style: "currency",
             currency: "PHP",

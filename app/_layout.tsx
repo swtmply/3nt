@@ -27,6 +27,17 @@ import {
   useFonts,
 } from "@expo-google-fonts/geist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import {
+  BottomSheetProvider,
+  useBottomSheet,
+} from "~/contexts/bottom-sheet-context";
+import { PortalHost } from "@rn-primitives/portal";
 
 function TabsLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
@@ -34,47 +45,88 @@ function TabsLayout() {
   const activeTintColor = isDarkColorScheme ? "white" : "black";
   const inactiveTintColor = isDarkColorScheme ? "gray" : "darkgray";
 
+  const { content, bottomSheetRef } = useBottomSheet();
+
+  const renderBackdrop = React.useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        opacity={0.8}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    []
+  );
+
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          borderTopWidth: 0,
-          height: 100,
-          paddingVertical: 0,
-          backgroundColor: isDarkColorScheme ? "black" : "white",
-        },
-        tabBarActiveTintColor: activeTintColor,
-        tabBarInactiveTintColor: inactiveTintColor,
-        tabBarItemStyle: {
-          height: "100%",
-          padding: 0,
-          margin: 0,
-        },
-        tabBarIconStyle: {
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 0,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: (props) => <Wallet {...props} />,
+    <>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            borderTopWidth: 0,
+            height: 100,
+            paddingVertical: 0,
+            backgroundColor: isDarkColorScheme ? "black" : "white",
+          },
+          tabBarActiveTintColor: activeTintColor,
+          tabBarInactiveTintColor: inactiveTintColor,
+          tabBarItemStyle: {
+            height: "100%",
+            padding: 0,
+            margin: 0,
+          },
+          tabBarIconStyle: {
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 0,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: "History",
-          tabBarIcon: (props) => <Clock {...props} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: (props) => <Wallet {...props} />,
+          }}
+        />
+        <Tabs.Screen
+          name="history"
+          options={{
+            title: "History",
+            tabBarIcon: (props) => <Clock {...props} />,
+          }}
+        />
+      </Tabs>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          snapPoints={["55%", "100%"]}
+          ref={bottomSheetRef}
+          backdropComponent={renderBackdrop}
+          enablePanDownToClose
+          handleStyle={{
+            backgroundColor: isDarkColorScheme
+              ? NAV_THEME["dark"].background
+              : NAV_THEME["light"].background,
+          }}
+          handleIndicatorStyle={{
+            backgroundColor: isDarkColorScheme
+              ? NAV_THEME["dark"].text
+              : NAV_THEME["light"].text,
+          }}
+          backgroundStyle={{
+            backgroundColor: isDarkColorScheme
+              ? NAV_THEME["dark"].background
+              : NAV_THEME["light"].background,
+          }}
+        >
+          {content}
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
+    </>
   );
 }
 
@@ -150,8 +202,12 @@ export default function RootLayout() {
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
         <GestureHandlerRootView className="flex-1">
-          <TabsLayout />
+          <BottomSheetProvider>
+            <TabsLayout />
+          </BottomSheetProvider>
         </GestureHandlerRootView>
+
+        <PortalHost />
       </ThemeProvider>
     </QueryClientProvider>
   );
