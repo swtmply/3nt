@@ -1,14 +1,24 @@
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { TouchableHighlight } from "react-native";
-import SpendingFormBottomSheet from "~/components/spending-bottom-sheet";
 import { Plus } from "~/components/icons";
+import SpendingFormBottomSheet from "~/components/spending-bottom-sheet";
+import { SpendingCard, SpendingCardSkeleton } from "~/components/spending-card";
 import { Text } from "~/components/ui/text";
 import { View } from "~/components/ui/view";
 import { useBottomSheet } from "~/contexts/bottom-sheet-context";
+import {
+  getSpendingsSummary,
+  queryKeys,
+} from "~/server/queries/spending-queries";
 
 export default function Index() {
   const { openBottomSheet } = useBottomSheet();
+
+  const { data, isFetching } = useQuery({
+    queryKey: queryKeys.spendingSummary,
+    queryFn: getSpendingsSummary,
+  });
 
   return (
     <View className="flex-1 px-4 pt-16">
@@ -17,27 +27,34 @@ export default function Index() {
       </Text>
 
       <View className="gap-4">
-        <SpendingCard
-          type="day"
-          currentSpending={5023}
-          previousSpending={1023}
-        />
-        <SpendingCard
-          type="week"
-          currentSpending={10203}
-          previousSpending={12321}
-        />
-        <SpendingCard
-          type="month"
-          currentSpending={123233}
-          previousSpending={1231211}
-        />
+        {isFetching ? (
+          [new Array(3).fill(0)].map((_, i) => <SpendingCardSkeleton key={i} />)
+        ) : (
+          <React.Fragment>
+            <SpendingCard
+              type="day"
+              currentSpending={data?.today || 0}
+              previousSpending={data?.yesterday || 0}
+            />
+            <SpendingCard
+              type="week"
+              currentSpending={data?.currentWeek || 0}
+              previousSpending={data?.lastWeek || 0}
+            />
+            <SpendingCard
+              type="month"
+              currentSpending={data?.currentMonth || 0}
+              previousSpending={data?.lastMonth || 0}
+            />
+          </React.Fragment>
+        )}
       </View>
 
       <TouchableHighlight
         onPress={() => {
           openBottomSheet(<SpendingFormBottomSheet />);
         }}
+        disabled={isFetching}
         className="absolute bottom-4 right-4 w-16 rounded-full bg-primary h-16 justify-center items-center"
       >
         <Plus size={32} className="rounded-full text-primary-foreground" />
@@ -45,44 +62,3 @@ export default function Index() {
     </View>
   );
 }
-
-interface SpendingCardProps {
-  type: "day" | "week" | "month";
-  currentSpending: number;
-  previousSpending: number;
-}
-
-const previousText = {
-  day: "Yesterday",
-  week: "Last Week",
-  month: "Last Month",
-};
-
-const SpendingCard = ({
-  type,
-  currentSpending,
-  previousSpending,
-}: SpendingCardProps) => {
-  return (
-    <View className="bg-secondary p-4 rounded-lg gap-3">
-      <Text className="text-lg capitalize font-geist-medium text-secondary-foreground">
-        Spent This {type}
-      </Text>
-      <View>
-        <Text className="text-4xl font-geist-medium text-secondary-foreground">
-          {Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(currentSpending)}
-        </Text>
-        <Text className="text-muted-foreground">
-          {previousText[type]}{" "}
-          {Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(previousSpending)}
-        </Text>
-      </View>
-    </View>
-  );
-};

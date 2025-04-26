@@ -48,6 +48,13 @@
             "node_modules/@expo-google-fonts/geist/900Black/Geist_900Black.ttf"
           ]
         }
+      ],
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true
+        }
       ]
     ],
     "experiments": {

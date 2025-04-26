@@ -17,8 +17,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { createSpending } from "~/server/mutations/spending-mutations";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "~/server/queries/spending-queries";
 
 const CreateSpendingForm = React.forwardRef((props, ref) => {
+  const queryClient = useQueryClient();
   const form = useForm<NewSpending>({
     defaultValues: {
       amount: 0,
@@ -28,10 +32,14 @@ const CreateSpendingForm = React.forwardRef((props, ref) => {
     },
   });
 
-  const onSubmit = (data: NewSpending) => {
-    console.log("Form submitted", data);
+  const onSubmit = async (data: NewSpending) => {
+    await createSpending(data);
 
-    // form.reset()
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.all,
+    });
+
+    form.reset();
   };
 
   useImperativeHandle(

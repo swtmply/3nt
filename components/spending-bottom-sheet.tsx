@@ -16,6 +16,8 @@ const SpendingFormBottomSheet = React.forwardRef<BottomSheetModal>(
       if (submitButtonRef.current) {
         // @ts-expect-error too lazy to type XD
         submitButtonRef.current.submit();
+
+        closeBottomSheet();
       }
     };
 
