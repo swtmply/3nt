@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.three_nt.app"
     },
     "web": {
       "bundler": "metro",
@@ -59,6 +60,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fb0c9d4a-b9f3-4ddd-bcf5-33c36aad058c"
+      }
+    },
+    "owner": "allenwhun"
   }
 }
