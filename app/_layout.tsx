@@ -18,6 +18,7 @@ import db from "~/server/db";
 import migrations from "~/server/db/drizzle/migrations";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
 import {
   Geist_400Regular,
@@ -38,9 +39,11 @@ import {
   useBottomSheet,
 } from "~/contexts/bottom-sheet-context";
 import { PortalHost } from "@rn-primitives/portal";
+import { expo } from "~/server/db";
 
 function TabsLayout() {
   const { colorScheme, isDarkColorScheme } = useColorScheme();
+  useDrizzleStudio(expo);
 
   const activeTintColor = isDarkColorScheme ? "white" : "black";
   const inactiveTintColor = isDarkColorScheme ? "gray" : "darkgray";

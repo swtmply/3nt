@@ -25,7 +25,7 @@ const CreateSpendingForm = React.forwardRef((props, ref) => {
   const queryClient = useQueryClient();
   const form = useForm<NewSpending>({
     defaultValues: {
-      amount: 0,
+      amount: undefined,
       date: new Date(),
       description: "",
       method: "",
@@ -118,7 +118,7 @@ const CreateSpendingForm = React.forwardRef((props, ref) => {
             <Label nativeID="amount">Amount</Label>
             <Input
               placeholder="Spending amount"
-              value={field.value.toString()}
+              value={field.value?.toString() || ""}
               onChangeText={(text) => {
                 const value = parseFloat(text);
                 field.onChange(isNaN(value) ? 0 : value);
