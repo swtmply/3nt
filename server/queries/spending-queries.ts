@@ -1,4 +1,4 @@
-import { and, gte, lte } from "drizzle-orm";
+import { and, desc, gte, lte } from "drizzle-orm";
 import db from "../db";
 import {
   startOfMonth,
@@ -10,7 +10,9 @@ import {
   startOfWeek,
   endOfWeek,
   subWeeks,
+  format,
 } from "date-fns";
+import { groupDataByDate } from "~/lib/utils";
 
 const getSpendingsSummary = async () => {
   const now = new Date();
@@ -63,9 +65,20 @@ const getSpendingsSummary = async () => {
   };
 };
 
+const getAllSpendings = async () => {
+  const spendings = await db.query.spendings.findMany({
+    orderBy: (spending) => desc(spending.date),
+  });
+
+  const groupSpendings = groupDataByDate(spendings);
+
+  return groupSpendings;
+};
+
 const queryKeys = {
   all: ["spending"],
   spendingSummary: ["spending", "summary"],
+  allSpendings: ["spending", "all"],
 };
 
-export { getSpendingsSummary, queryKeys };
+export { getSpendingsSummary, getAllSpendings, queryKeys };
